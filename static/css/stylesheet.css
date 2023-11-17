@@ -108,3 +108,17 @@
     margin-bottom: -2rem;
     margin-top: 1rem;
 }
+
+/* Activate dropdown on hover */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Remove indicator arrow */
+.dropdown-toggle::after {
+    content: none;
+}
+.text-block{
+    margin-left: 10rem;
+    margin-top: 6rem;
+}
