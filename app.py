@@ -12,6 +12,10 @@ def index():
 def mitglied_werden():
     return render_template('mitglied-werden.html')
 
+@app.route('/mitgliedsantrag')
+def mitgliedsantrag():
+    return render_template('mitgliedsantrag.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
