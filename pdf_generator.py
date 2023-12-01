@@ -1,44 +1,71 @@
 import os
-from flask import request, send_file
+from flask import Flask, request, send_file
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib import colors
 from base64 import b64decode
-import tempfile
+from PIL import Image
+from io import BytesIO
+import datetime
+
+app = Flask(__name__)
 
 def generate_pdf(signature_data, file_path):
-    # Dekodieren der Bilddaten
     signature_image_data = b64decode(signature_data.split(',')[1])
 
-    # Speichern der Bilddaten in einer temporären Datei
-    with tempfile.NamedTemporaryFile(delete=False) as temp_image_file:
-        temp_image_file.write(signature_image_data)
-
-    # Erstellen der PDF-Datei
     pdf = canvas.Canvas(file_path, pagesize=letter)
-    pdf.drawString(100, 100, "Hier ist die Unterschrift:")
-    pdf.drawImage(temp_image_file.name, 100, 150)  # Verwenden des temporären Dateipfades
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Mitgliedsantrag TSV Roßtal")
+
+    pdf.setFont("Helvetica", 12)
+    table_data = [
+        ["Name:", ""],
+        ["Vorname:", ""],
+        ["Adresse:", ""],
+        ["PLZ:", ""],
+        ["Ort:", ""],
+        ["Datum:", ""],
+        ["Unterschrift:", ""]
+    ]
+
+    current_timestamp = datetime.datetime.now().strftime("%d.%m.%Y")
+    table_data[5][1] = current_timestamp
+
+    for row_index, row in enumerate(table_data):
+        pdf.drawString(100, 700 - 30 * row_index, row[0])
+        if row_index == 5:
+            pdf.drawString(300, 700 - 30 * row_index, row[1])
+            pdf.setStrokeColor(colors.lightgrey)  # Hellgraue Rahmenfarbe
+            pdf.rect(300, 685 - 30 * row_index, 200, 90, stroke=1, fill=0)  # Anpassung der Höhe für die Unterschrift auf 90
+        else:
+            pdf.drawString(300, 700 - 30 * row_index, row[1])
+            pdf.setStrokeColor(colors.lightgrey)  # Hellgraue Rahmenfarbe
+            pdf.rect(300, 685 - 30 * row_index, 200, 30, stroke=1, fill=0)  # Beibehaltung der Höhe für andere Zellen auf 30
+
+        if row_index == 6:
+            signature_image = Image.open(BytesIO(signature_image_data))
+            image_width, image_height = signature_image.size
+            scale_factor = 190 / image_width if image_width > 0 else 1
+            scaled_width = image_width * scale_factor
+            scaled_height = image_height * scale_factor
+            pdf.drawInlineImage(signature_image, 310, 710 - 30 * row_index - scaled_height, width=scaled_width, height=scaled_height)
+
     pdf.save()
 
-    # Löschen der temporären Bilddatei
-    os.remove(temp_image_file.name)
-
+@app.route('/download_pdf', methods=['POST'])
 def download_pdf():
     print("Route '/download_pdf' wurde aufgerufen.")
     signature_data = request.form['signature']
-    if request.method == 'POST':
-        print("POST-Anfrage empfangen.")
-        print("Unterschriftdaten erhalten:", signature_data)
-
-    # Pfad für die Speicherung der PDF-Datei
     file_path = os.path.join('static', 'fileAblage', 'unterschrift.pdf')
 
-    # Erstellen der PDF-Datei
     generate_pdf(signature_data, file_path)
 
-    # Sende die PDF-Datei zurück als Download
     return send_file(
         file_path,
         as_attachment=True,
         mimetype='application/pdf',
         download_name='unterschrift.pdf'
     )
+
+if __name__ == "__main__":
+    app.run(debug=True)
