@@ -49,7 +49,7 @@ def generate_pdf(signature_data, file_path):
             scaled_width = image_width * scale_factor
             scaled_height = image_height * scale_factor
 
-            table_data[6][1] = pdf.drawInlineImage(signature_image, 310, 710 - 50 * row_index - scaled_height, width=scaled_width, height=scaled_height)
+            table_data[6][1] = pdf.drawInlineImage(signature_image, 305, 730 - 50 * row_index - scaled_height, width=scaled_width, height=scaled_height)
 
     pdf.save()
 
