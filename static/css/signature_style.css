@@ -29,19 +29,15 @@
 }
 
 .submitButton {
-    background-color: #6e7b8b; /* Blaugrau */
+    background-color: #2da316; /* Blaugrau */
     color: white;
 }
 
 .clearButton {
-    background-color: #000; /* Schwarz */
+    background-color: #585858; /* Schwarz */
     color: white;
 }
 
-.saveButton {
-    background-color: #d9534f; /* Rot */
-    color: white;
-}
 
 /* Hover effects for buttons */
 .actionButton:hover {
