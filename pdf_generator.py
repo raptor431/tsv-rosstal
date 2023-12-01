@@ -32,15 +32,15 @@ def generate_pdf(signature_data, file_path):
     table_data[5][1] = current_timestamp
 
     for row_index, row in enumerate(table_data):
-        pdf.drawString(100, 700 - 30 * row_index, row[0])
+        pdf.drawString(100, 700 - 50 * row_index, row[0])
         if row_index == 5:
-            pdf.drawString(300, 700 - 30 * row_index, row[1])
+            pdf.drawString(300, 700 - 50 * row_index, row[1])
             pdf.setStrokeColor(colors.lightgrey)  # Hellgraue Rahmenfarbe
-            pdf.rect(300, 685 - 30 * row_index, 200, 90, stroke=1, fill=0)  # Anpassung der Höhe für die Unterschrift auf 90
+            pdf.rect(300, 685 - 50 * row_index, 200, 50, stroke=1, fill=0)  # Anpassung der Höhe für die Unterschrift auf 50
         else:
-            pdf.drawString(300, 700 - 30 * row_index, row[1])
+            pdf.drawString(300, 700 - 50 * row_index, row[1])
             pdf.setStrokeColor(colors.lightgrey)  # Hellgraue Rahmenfarbe
-            pdf.rect(300, 685 - 30 * row_index, 200, 30, stroke=1, fill=0)  # Beibehaltung der Höhe für andere Zellen auf 30
+            pdf.rect(300, 685 - 50 * row_index, 200, 50, stroke=1, fill=0)  # Beibehaltung der Höhe für andere Zellen auf 50
 
         if row_index == 6:
             signature_image = Image.open(BytesIO(signature_image_data))
@@ -48,7 +48,8 @@ def generate_pdf(signature_data, file_path):
             scale_factor = 190 / image_width if image_width > 0 else 1
             scaled_width = image_width * scale_factor
             scaled_height = image_height * scale_factor
-            pdf.drawInlineImage(signature_image, 310, 710 - 30 * row_index - scaled_height, width=scaled_width, height=scaled_height)
+
+            table_data[6][1] = pdf.drawInlineImage(signature_image, 310, 710 - 50 * row_index - scaled_height, width=scaled_width, height=scaled_height)
 
     pdf.save()
 
